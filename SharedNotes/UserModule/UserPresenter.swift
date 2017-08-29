@@ -15,7 +15,7 @@ protocol UserPresenterInput {
   var viewModel : UserModule.Context.ViewModel? { get set }
   func start()
   
-  func assignUser(user: User)
+  func assignUserId(userId: String)
   
   func logOut()
 }
@@ -23,16 +23,20 @@ protocol UserPresenterOutput {
   func didChangeState(viewModel : UserModule.Context.ViewModel)
 }
 
-class UserPresenter: UserPresenterInput
-{
+class UserPresenter: UserPresenterInput {
   //MARK: - Essentials
   var view: UIViewController!
   var output : UserPresenterOutput?
   var viewModel : UserModule.Context.ViewModel? {
     didSet{
-      
+      guard let viewModel = self.viewModel else {
+        return
+        //or do something else like show placeholder
+      }
+      self.output?.didChangeState(viewModel: viewModel)
     }
   }
+  var userRequest : UserModule.Context.Request?
   let router : UserRoutingLogic = UserRouter()
   var interactor : UserInteractorInput = UserInteractor()
   //MARK: - Initializers
@@ -49,17 +53,17 @@ class UserPresenter: UserPresenterInput
   
   // MARK: - Presenter Input
   func start() {
-    guard let viewModel = self.viewModel else {
+    guard let request = self.userRequest else {
       return
-      //or do something else like show placeholder
     }
-    self.output?.didChangeState(viewModel: viewModel)
+    
+    self.interactor.getUserInfo(request: request)
   }
   func logOut() {
     self.interactor.logout()
   }
-  func assignUser(user: User) {
-    self.viewModel = UserModule.Context.ViewModel(user: user)
+  func assignUserId(userId: String) {
+    self.userRequest = UserModule.Context.Request(userId: userId)
   }
 }
 extension UserPresenter : UserInteractorOutput {
@@ -69,6 +73,9 @@ extension UserPresenter : UserInteractorOutput {
   }
   
   func didFail(with error: Error){
-//    self.router.showError(error: error)
+  }
+  
+  func didReceive(user: User) {
+    self.viewModel = UserModule.Context.ViewModel(user: user)
   }
 }

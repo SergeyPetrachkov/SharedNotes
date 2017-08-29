@@ -14,7 +14,7 @@ class UserAssembly {
   static func createModule(for user: User) -> UserViewController {
     let controller = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "User") as! UserViewController
     controller.title = user.firstName
-    controller.presenter?.assignUser(user: user)
+    controller.presenter?.assignUserId(userId: user.userId)
     return controller
   }
 }

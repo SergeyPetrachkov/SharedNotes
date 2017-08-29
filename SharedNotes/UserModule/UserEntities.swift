@@ -19,6 +19,7 @@ enum UserModule
   {
     struct Request
     {
+      let userId : String
     }
     struct Response
     {

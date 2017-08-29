@@ -12,20 +12,21 @@
 import UIKit
 import RealmSwift
 
-protocol UserInteractorInput
-{
+protocol UserInteractorInput {
   var output : UserInteractorOutput? { get set }
   func logout()
+  func getUserInfo(request : UserModule.Context.Request)
 }
 
 protocol UserInteractorOutput {
+  func didReceive(user: User)
   func didWipeOut()
   func didFail(with error: Error)
 }
 
 protocol UserDataStore
 {
-  //var name: String { get set }
+  
 }
 
 class UserInteractor: UserInteractorInput, UserDataStore
@@ -34,6 +35,16 @@ class UserInteractor: UserInteractorInput, UserDataStore
   var output: UserInteractorOutput?
   
   // MARK: Do something
+  func getUserInfo(request : UserModule.Context.Request) {
+    if let realm = try? Realm() {
+      if let user = realm.objects(User.self).first(where: {$0.userId == request.userId}) {
+        self.output?.didReceive(user: user)
+      }
+      else {
+        //ask server maybe?
+      }
+    }
+  }
   func logout() {
     if let realm = try? Realm() {
       do{
