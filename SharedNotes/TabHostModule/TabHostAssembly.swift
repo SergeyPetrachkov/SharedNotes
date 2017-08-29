@@ -15,6 +15,9 @@ class TabHostAssembly {
     let controller = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TabHost")
     
     let userController = UserAssembly.createModule(for: user)
+    let notesController = NotesAssembly.createModule()
+    
+    controller.addChildViewController(UINavigationController(rootViewController: notesController))
     controller.addChildViewController(userController)
     return controller as! TabHostViewController
   }
