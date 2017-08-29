@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,6 +16,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    var controller : UIViewController = AuthAssembly.createModule()
+    if let realm = try? Realm() {
+      if let user = realm.objects(User.self).last {
+        print(user)
+        controller = TabHostAssembly.createModule(user: user)
+      }
+    }
+    
+    self.window = UIWindow(frame: UIScreen.main.bounds)
+    self.window?.rootViewController = controller
+    self.window?.makeKeyAndVisible()
     // Override point for customization after application launch.
     return true
   }
